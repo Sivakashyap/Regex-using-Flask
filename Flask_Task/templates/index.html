@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask Regex Tester</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #validationResult {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Flask Regex Tester</h2>
+    {% if matched_strings %}
+        <h4>Matched Strings:</h4>
+        <ul>
+            {% for matched_string in matched_strings %}
+                <li>{{ matched_string }}</li>
+            {% endfor %}
+        </ul>
+        <p>Match found!</p>
+    {% else %}
+        {% if matched_strings is not none %}
+            <p>No matches found.</p>
+        {% endif %}
+    {% endif %}
+
+    <hr>
+
+    <form method="post" action="/">
+        <label for="testString">Test String:</label>
+        <input type="text" id="testString" name="testString" required>
+
+        <label for="regexPattern">Regular Expression (Regex):</label>
+        <input type="text" id="regexPattern" name="regexPattern" required>
+
+        <label>Flags:</label>
+        <input type="checkbox" id="flagG" name="flags" value="g"> <label for="flagG">Global (g)</label>
+        <input type="checkbox" id="flagI" name="flags" value="i"> <label for="flagI">Case Insensitive (i)</label>
+        <input type="checkbox" id="flagM" name="flags" value="m"> <label for="flagM">Multiline (m)</label>
+        <input type="checkbox" id="flagS" name="flags" value="s"> <label for="flagS">Dot Matches All (s)</label>
+        <input type="checkbox" id="flagU" name="flags" value="u"> <label for="flagU">Unicode (u)</label>
+
+        <button type="submit">Test Regex</button>
+    </form>
+
+    <hr>
+
+<h3>Email Validation</h3>
+<form id="emailForm">
+    <label for="email">Email:</label>
+    <input type="text" id="email" name="email" required>
+    <button type="button" onclick="validateEmail()">Validate Email</button>
+    <div id="emailError" style="color: red;"></div>
+</form>
+
+<div id="validationResult"></div>
+
+
+<script>
+    function validateEmail() {
+        var email = document.getElementById('email').value.trim();
+        var emailErrorElement = document.getElementById('emailError');
+
+        if (!email) {
+            emailErrorElement.innerHTML = 'Please fill out this area.';
+            return;
+        }
+
+        emailErrorElement.innerHTML = '';
+
+        fetch('/validate-email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'email=' + encodeURIComponent(email),
+        })
+        .then(response => response.json())
+        .then(data => {
+            var resultElement = document.getElementById('validationResult');
+            resultElement.innerHTML = data.is_valid ? '<p>Valid email address.</p>' : '<p>Invalid email address.</p>';
+        });
+    }
+</script>
+
+    
+
+</body>
+</html>
